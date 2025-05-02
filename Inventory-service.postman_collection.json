@@ -1,0 +1,991 @@
+{
+	"info": {
+		"_postman_id": "eae55c31-017f-48b2-a0e8-fb0a3b33ba72",
+		"name": "Inventory-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44390129",
+		"_collection_link": "https://blue-firefly-581716.postman.co/workspace/Finopay-API-automation~3375e81b-7fdb-4130-8425-b4a7d8959090/collection/44116124-eae55c31-017f-48b2-a0e8-fb0a3b33ba72?action=share&source=collection_link&creator=44390129"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" const res = pm.response.json();\r",
+							" pm.environment.set(\"access_token\",res.data.accessToken)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "channel",
+						"value": "WEB",
+						"type": "text"
+					},
+					{
+						"key": "device-id",
+						"value": "TWEA1ebjA755hZRMugvy65yQyVolgD4JFr3jBRMpyzPhzzRlRDyIQunT5Js0VRryT2l4vTJKajGZIG8sF0XqoHsJ+4+B8DeCIGpdkpkSVdKeRVyiP0MTLp+E/QNPTJpxLgASjVZwLqKqWxJiv16tUt7Kd2E/O8DQewj8/ztYbJNoqPpAzn8rASsq6g+vBSqEllf3MJ+Uj6Jf9cF5+J41qnMwZnbQCyP9dPThGP7uw7vX8ZGEKtV++4QHMG1W4sT/BOPEE7pTCEK/PQQvZY0b+Muk4GE+S+/neyEo0rvLveUORFe3u6vFlcDX+mdC4GIfz/akXevifrYj2+/2/ajCgQ==",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"countryCode\": \"NG\",\r\n    \"passcode\": \"OsqUE0d5HnSoY6nj+z8hso+ekgnt3q/VLn2lyHcB0olO4jzeaG8fAW1pS3zSo+f7eNfZB3kOh2iOrUdIJs1ReccFd3JLF7uZSoXodKjniNgY4Z60UR2FzXyN8DLVIYwL8aH5q9eFEwJ+UyuvgTWOAsIvIPT4uAb+dEhQ0cpThwAO5CIbnwB1CHfW4zUxd8uxY998St5t6kzU7cGw/RkeOwpA5SZxnbJIvEO9THCFI/4icunvYKPnmozsVHNbxsh1QU+lGw1of4nrAB3sLFTJW36/eA67v1U1hCdijm8DiNi3xmBWjURDtiSKYw8slBbWEdaRNBFFNruk3pDAI+x8Vg==\",\r\n    \"phoneNumber\": \"+2349072318317\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SIT_URL}}/user-service/api/authentication/signin",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"user-service",
+						"api",
+						"authentication",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Unit of Measure",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseData = pm.response.json();\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has the required fields\", function () {\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data).to.have.property(\"id\");\r",
+							"    pm.expect(responseData.data).to.have.property(\"label\");\r",
+							"    pm.expect(responseData.data).to.have.property(\"description\");\r",
+							"    pm.expect(responseData.data).to.have.property(\"status\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate unit of measurement added\", function () {\r",
+							"    var inputData = JSON.parse(pm.request.body.raw);\r",
+							"    pm.expect(responseData.data.label).to.eq(inputData.label);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let unit = `Dozen ${pm.variables.replaceIn('{{$randomBsNoun}}')}`\r",
+							"\r",
+							"pm.environment.set(\"unit_of_measure\", unit.substring(0,15))"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"label\": \"{{unit_of_measure}}\"\r\n//   \"description\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/measurements/units",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"measurements",
+						"units"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Units of measurement",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json()\r",
+							"pm.test(\"Verify status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response data is not empty\", function () {\r",
+							"  pm.expect(res.data.length).to.be.greaterThan(0)\r",
+							"   //unit of measurement should equal to the UOM created\r",
+							"  pm.expect(responseData.data[0].label).to.eq(pm.environment.get(\"unit_of_measure\"))\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Verify unit of mesaurement label is not empty\", function () {\r",
+							"  pm.expect(res.data[0].label).to.not.be.empty\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Verify status of unit of measurement\", function () {\r",
+							"     pm.expect(res.data[0].status).to.be.oneOf([true,false])\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/measurements/units?search=",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"measurements",
+						"units"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate response\", function () {\r",
+							"    var jsonData = pm.response.json().data;\r",
+							"    const inputData = JSON.parse(pm.request.body.raw)\r",
+							"    \r",
+							"    pm.expect(jsonData.baseProduct.name).to.eq(inputData.productName)\r",
+							"    pm.expect(jsonData.variantProduct.price).to.eq(inputData.unitPrice)\r",
+							"    pm.expect(jsonData.stock.quantity).to.eq(inputData.stockAvailable)\r",
+							"    pm.expect(jsonData.imageUrl.length).to.eq(1)\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productName\": \"Chocolate Chip Cookie\",\r\n    \"unitOfMeasurement\": \"{{unit_of_measure}}\",\r\n    \"unitPrice\": 29.99,\r\n    \"stockAvailable\": 200\r\n    // \"productImage\":\"data:image/jpeg;base64,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\"\r\n  }\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/merchants/catalog/products",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"merchants",
+						"catalog",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get product suggestions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"  const responseData = pm.response.json()\r",
+							"// Validate status code is 200\r",
+							"pm.test(\"Verify status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate product name suggestion results\", function () {\r",
+							"    let queryParams = pm.request.url.query;\r",
+							"    let productName = queryParams.find(q => q.key === \"query\").value;\r",
+							"\r",
+							"    pm.expect(responseData.data.length).to.be.greaterThan(0)\r",
+							"    \r",
+							"   if(responseData.data.length> 0){\r",
+							"    responseData.data.forEach((item)=>{\r",
+							"         pm.expect(item.productName).to.include(productName);\r",
+							"    })\r",
+							"   }\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/products/search?query=Mango",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"products",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "Mango"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download bulk upload template",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validate status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Verify response header for downloaded file with 'application/vnd'\r",
+							"pm.test(\"Verify content-type for downloaded file\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/products/bulk-upload/template/download",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"products",
+						"bulk-upload",
+						"template",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add products in bulk",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify bulk upload operation\", function () {\r",
+							"    const responseData = pm.response.json()\r",
+							"    pm.expect(responseData.data.operationId).not.be.empty\r",
+							"    pm.expect(responseData.data.message).to.eql(\"Bulk upload initiated\")\r",
+							"    pm.environment.set(\"bulk_upload_operationId\",responseData.data.operationId)\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "7ZE0_3NIb/bulk_upload_mini2.xlsx"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/products/bulk-upload",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"products",
+						"bulk-upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get bulk upload operation status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" var jsonData = pm.response.json().data;\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate product entries \", function () {\r",
+							"    if(jsonData.operationStatus == \"COMPLETED\"){\r",
+							"        pm.expect(jsonData.result.total).to.eq(2);\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate response properties \", function () {\r",
+							"    pm.expect(jsonData.operationId).not.to.be.empty;\r",
+							"    pm.expect(jsonData.operationStatus).not.to.be.empty;\r",
+							"   if(jsonData.operationStatus == \"COMPLETED\"){\r",
+							"        pm.expect(jsonData.result.id).not.to.be.null;\r",
+							"        pm.expect(jsonData.result.documentId).not.to.be.empty;\r",
+							"        pm.expect(jsonData.result.totalUploaded).to.exist;\r",
+							"        pm.expect(jsonData.result.totalFailed).to.exist;\r",
+							"        pm.expect(jsonData.result.duplicates).to.exist;\r",
+							"   }\r",
+							"\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/products/bulk-upload-operations/{{bulk_upload_operationId}}",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"products",
+						"bulk-upload-operations",
+						"{{bulk_upload_operationId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Bulk Upload Report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify content-type for downloaded file\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/octet-stream\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" let bulk_upload_operationId = pm.environment.get(\"bulk_upload_operationId\");\r",
+							"\r",
+							"const bulkOpStatusReq = {\r",
+							"    url: `https://zenpaysitngapw.zenbyzenith.com/inventory-service/api/inventory/products/bulk-upload-operations/${bulk_upload_operationId}`,\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        \"Authorization\": `Bearer ${pm.environment.get(\"access_token\")}`,\r",
+							"        \"Content-Type\": \"application/json\"\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"// //set bulk_uploadId\r",
+							"pm.sendRequest(bulkOpStatusReq,(err,res)=>{\r",
+							"  if(err){ return; }\r",
+							"  let result = res.json().data.result\r",
+							"    pm.variables.set(\"bulk_uploadId\", result.documentId)\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/products/bulk-upload/report/download?uploadId={{bulk_uploadId}}",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"products",
+						"bulk-upload",
+						"report",
+						"download"
+					],
+					"query": [
+						{
+							"key": "uploadId",
+							"value": "{{bulk_uploadId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get product by name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate product name\", function () {\r",
+							"    const jsonData = pm.response.json().data.content;\r",
+							"    const items = jsonData.map((item) => item.name);\r",
+							"     items.forEach(item =>{\r",
+							"           pm.expect(item).to.include(\"Chocolate\");\r",
+							"     })\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/merchants/products/name?page=1&size=5&search=Chocolate Chip Cookies",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"merchants",
+						"products",
+						"name"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						},
+						{
+							"key": "search",
+							"value": "Chocolate Chip Cookies"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get merchant product list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" const Ajv = require('ajv');\r",
+							" const ajv = new Ajv({ allErrors: true }); \r",
+							" var response = pm.response.json();\r",
+							" \r",
+							"pm.test(\"Verify status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate the JSON schema of API response\r",
+							"pm.test(\"Validate the JSON schema of the API response\", function () {\r",
+							"    var schema = {\r",
+							"        type: \"object\",\r",
+							"        properties: {\r",
+							"            success: { type: \"boolean\" },\r",
+							"            message: { type: \"string\" },\r",
+							"            internalCode: { type: \"string\" },\r",
+							"            dateTime: { type: \"string\" },\r",
+							"            data: {\r",
+							"                type: \"object\",\r",
+							"                properties: {\r",
+							"                    content: {\r",
+							"                        type: \"array\",\r",
+							"                        items: {\r",
+							"                            type: \"object\",\r",
+							"                            properties: {\r",
+							"                                documentId: { type: \"string\" },\r",
+							"                                price: { type: \"number\" },\r",
+							"                                lowStockThreshold: { type: \"number\" },\r",
+							"                                stockLevel: { type: \"number\" },\r",
+							"                                lowInStock: { type: \"boolean\" },\r",
+							"                                baseProduct: {\r",
+							"                                    type: \"object\",\r",
+							"                                    properties: {\r",
+							"                                        documentId: { type: \"string\" },\r",
+							"                                        name: { type: \"string\" },\r",
+							"                                        unitOfMeasurement: { type: \"string\" },\r",
+							"                                        imageUrl: { type: \"string\" }\r",
+							"                                    },\r",
+							"                                    required: [\"documentId\", \"name\", \"unitOfMeasurement\", \"imageUrl\"]\r",
+							"                                }\r",
+							"                            },\r",
+							"                            required: [\"documentId\", \"price\", \"lowStockThreshold\", \"stockLevel\", \"lowInStock\", \"baseProduct\"]\r",
+							"                        }\r",
+							"                    },\r",
+							"                    totalPages: { type: \"number\" },\r",
+							"                    totalItems: { type: \"number\" },\r",
+							"                    totalItemsCurrentPage: { type: \"number\" },\r",
+							"                    currentPage: { type: \"number\" },\r",
+							"                    empty: { type: \"boolean\" },\r",
+							"                    lastPage: { type: \"boolean\" },\r",
+							"                    firstPage: { type: \"boolean\" }\r",
+							"                },\r",
+							"                required: [\"content\", \"totalPages\", \"totalItems\", \"totalItemsCurrentPage\", \"currentPage\", \"empty\", \"lastPage\", \"firstPage\"]\r",
+							"            }\r",
+							"        },\r",
+							"        required: [\"success\", \"message\", \"internalCode\", \"dateTime\", \"data\"]\r",
+							"    };\r",
+							"\r",
+							"    const validate = ajv.compile(schema);\r",
+							"    pm.expect(validate(response),JSON.stringify(schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"//set single added product id\r",
+							"  let jsonData = response.data.content\r",
+							"  let singleProduct = jsonData.filter(product=>\r",
+							"    product.baseProduct && product.baseProduct.name.includes(\"Chocolate\")\r",
+							"  ).map(item=>\r",
+							"        item.baseProduct.documentId)\r",
+							"    pm.environment.set(\"productId\", singleProduct[0])\r",
+							"    console.log(\"product\",singleProduct[0])\r",
+							"\r",
+							"//set bulk product ids\r",
+							"  let bulkProducts = jsonData.filter(product=>product.baseProduct.name.includes(\"Gari Mix\" ))\r",
+							"  .map(item=>item.baseProduct.documentId)\r",
+							"    pm.environment.set(\"bulk_upload_productIds\", bulkProducts)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/merchants/products?page=1&size=10&search=",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"merchants",
+						"products"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "search",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"       \r",
+							"\r",
+							"pm.test(\"Validate the values of product name, unit price, stock quantity, and unit of measurement\", function () {\r",
+							"    var inputData = JSON.parse(pm.request.body.raw);\r",
+							"\r",
+							"    var responseData = pm.response.json().data;\r",
+							"\r",
+							"    pm.expect(responseData.product_name).to.equal(inputData.productName);\r",
+							"    pm.expect(responseData.price).to.equal(inputData.unitPrice);\r",
+							"    pm.expect(Number(responseData.stock.quantity)).to.equal(inputData.stockAvailable);\r",
+							"    pm.expect(responseData.unit_of_measurement.label).to.equal(inputData.unitOfMeasurement);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"productName\": \"Chocolate {{$randomColor}}\",\n  \"unitOfMeasurement\": \"{{unit_of_measure}}\",\n  \"unitPrice\": 59.25,\n  \"stockAvailable\": 100\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/products/{{productId}}",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"products",
+						"{{productId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify successful delete\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.success).to.be.true\r",
+							"});\r",
+							"\r",
+							"\r",
+							"//try to delete bulk uploaded products\r",
+							"let productIds = pm.environment.get(\"bulk_upload_productIds\")\r",
+							"console.log(\"ITEMS IDS\",productIds)\r",
+							"productIds.forEach(productId => {\r",
+							"    let url = `https://zenpaysitngapw.zenbyzenith.com/inventory-service/api/inventory/products/${productId}`\r",
+							"    pm.sendRequest({\r",
+							"        url: url,\r",
+							"        method: 'DELETE',\r",
+							"        header: {\r",
+							"            \"Authorization\": `Bearer ${pm.environment.get(\"access_token\")}`,\r",
+							"            \"Content-Type\": \"application/json\"\r",
+							"        }\r",
+							"    }, (err, res) => {\r",
+							"        if (err) { return; }\r",
+							"\r",
+							"    })\r",
+							"})\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{SIT_URL}}/inventory-service/api/inventory/products/{{productId}}",
+					"host": [
+						"{{SIT_URL}}"
+					],
+					"path": [
+						"inventory-service",
+						"api",
+						"inventory",
+						"products",
+						"{{productId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
